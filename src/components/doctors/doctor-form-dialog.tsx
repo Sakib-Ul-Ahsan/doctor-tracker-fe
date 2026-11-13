@@ -14,6 +14,7 @@ import {
 import { doctorFormSchema, DoctorFormValues } from "@/lib/validations";
 import { useCreateDoctor, useUpdateDoctor } from "@/hooks/use-doctors";
 import { Doctor } from "@/types/api";
+import { ApiClientError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -44,6 +45,7 @@ export function DoctorFormDialog({
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<DoctorFormValues>({
     resolver: zodResolver(doctorFormSchema),
@@ -78,8 +80,14 @@ export function DoctorFormDialog({
         await createDoctor.mutateAsync(values);
       }
       onOpenChange(false);
-    } catch {
-      // Error toast handled in mutation hook
+    } catch (err: unknown) {
+      if (err instanceof ApiClientError && err.errors && err.errors.length > 0) {
+        for (const errorItem of err.errors) {
+          if (errorItem.field === "email" || errorItem.field === "phone") {
+            setError(errorItem.field, { message: errorItem.message });
+          }
+        }
+      }
     }
   };
 
@@ -207,11 +215,12 @@ export function DoctorFormDialog({
                   <Phone className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <Input
                     id="doctor-phone"
-                    placeholder="+880-1711-XXXXXX"
+                    placeholder="88017XXXXXXXX"
                     className="pl-9"
                     {...register("phone")}
                   />
                 </div>
+                <p className="text-[10px] text-slate-400">Format: 8801XXXXXXXXX (13 digits)</p>
                 {errors.phone && (
                   <p className="text-xs text-rose-600 font-medium">{errors.phone.message}</p>
                 )}
