@@ -13,8 +13,13 @@ const nextConfig: NextConfig = {
     },
   },
   async rewrites() {
-    const backendTarget =
-      process.env.BACKEND_API_URL || "https://doctor-tracker-be.vercel.app";
+    const rawTarget =
+      process.env.BACKEND_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "https://doctor-tracker-be-z4sm.onrender.com";
+
+    // Strip trailing slashes and /api if included
+    const backendTarget = rawTarget.replace(/\/api\/?$/, "").replace(/\/+$/, "");
 
     return [
       {
@@ -23,7 +28,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/api/:path*",
-        destination: `${backendTarget}/api/v1/:path*`,
+        destination: `${backendTarget}/api/:path*`,
       },
     ];
   },
