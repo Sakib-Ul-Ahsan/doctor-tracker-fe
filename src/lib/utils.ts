@@ -41,3 +41,22 @@ export function getInitials(name: string): string {
     .join("");
 }
 
+/**
+ * Returns consistent styling tokens based on common medical condition keywords
+ */
+export function getConditionBadgeVariant(condition: string): "default" | "secondary" | "indigo" | "amber" | "emerald" | "destructive" | "purple" | "sky" {
+  const lower = condition.toLowerCase();
+  if (lower.includes("hyper") || lower.includes("cardio") || lower.includes("arrhythmia")) {
+    return "destructive";
+  }
+  if (lower.includes("diabet") || lower.includes("strain") || lower.includes("osteo")) {
+    return "amber";
+  }
+  if (lower.includes("asthma") || lower.includes("respir") || lower.includes("migraine")) {
+    return "indigo";
+  }
+  if (lower.includes("eczema") || lower.includes("derma") || lower.includes("skin")) {
+    return "purple";
+  }
+  return "sky";
+}

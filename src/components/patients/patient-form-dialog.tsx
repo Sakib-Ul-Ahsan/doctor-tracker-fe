@@ -3,7 +3,14 @@
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import {
+  Activity,
+  Loader2,
+  Mail,
+  Phone,
+  User,
+  UserPlus,
+} from "lucide-react";
 import { patientFormSchema, PatientFormValues } from "@/lib/validations";
 import { useDoctorOptions } from "@/hooks/use-doctors";
 import { useCreatePatient, useUpdatePatient } from "@/hooks/use-patients";
@@ -14,7 +21,6 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -103,143 +109,206 @@ export function PatientFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[540px]">
-        <DialogHeader>
-          <DialogTitle>
-            {isEditing ? "Edit Patient Record" : "Register New Patient"}
-          </DialogTitle>
-          <DialogDescription>
-            {isEditing
-              ? "Update patient demographics, medical condition, and assigned physician."
-              : "Enter patient details and assign them to an attending physician."}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[540px] p-0 overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-50 border-b border-slate-100 p-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm shadow-blue-600/20">
+              <UserPlus className="h-5 w-5" />
+            </div>
+            <div>
+              <DialogTitle className="text-lg font-bold text-slate-900">
+                {isEditing ? "Edit Patient Record" : "Register Clinical Patient"}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-500 mt-0.5">
+                {isEditing
+                  ? "Update patient demographic, clinical condition, or attending physician."
+                  : "Enter patient intake details and assign an attending doctor."}
+              </DialogDescription>
+            </div>
+          </div>
+        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="patient-name">Full Name</Label>
-            <Input
-              id="patient-name"
-              placeholder="Tariqul Islam"
-              {...register("name")}
-            />
-            {errors.name ? (
-              <p className="text-xs text-rose-600">{errors.name.message}</p>
-            ) : null}
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+          {/* Section 1: Demographics */}
+          <div className="space-y-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Demographic Profile
+            </span>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="patient-name" className="text-xs font-semibold text-slate-700">
+                Full Patient Name
+              </Label>
+              <div className="relative">
+                <User className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Input
+                  id="patient-name"
+                  placeholder="Tariqul Islam"
+                  className="pl-9"
+                  {...register("name")}
+                />
+              </div>
+              {errors.name && (
+                <p className="text-xs text-rose-600 font-medium">{errors.name.message}</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="patient-age" className="text-xs font-semibold text-slate-700">
+                  Age (Years)
+                </Label>
+                <Input
+                  id="patient-age"
+                  type="number"
+                  min={0}
+                  max={130}
+                  {...register("age", { valueAsNumber: true })}
+                />
+                {errors.age && (
+                  <p className="text-xs text-rose-600 font-medium">{errors.age.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-slate-700">
+                  Biological Gender
+                </Label>
+                <Controller
+                  name="gender"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="h-9 bg-white">
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.gender && (
+                  <p className="text-xs text-rose-600 font-medium">{errors.gender.message}</p>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Section 2: Contact Info */}
+          <div className="space-y-3 pt-2 border-t border-slate-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Contact Channels
+            </span>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="patient-phone" className="text-xs font-semibold text-slate-700">
+                  Phone Number
+                </Label>
+                <div className="relative">
+                  <Phone className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="patient-phone"
+                    placeholder="+880-1712-XXXXXX"
+                    className="pl-9"
+                    {...register("phone")}
+                  />
+                </div>
+                {errors.phone && (
+                  <p className="text-xs text-rose-600 font-medium">{errors.phone.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="patient-email" className="text-xs font-semibold text-slate-700">
+                  Email Address
+                </Label>
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="patient-email"
+                    type="email"
+                    placeholder="patient@example.com"
+                    className="pl-9"
+                    {...register("email")}
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-xs text-rose-600 font-medium">{errors.email.message}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Clinical Condition & Assignment */}
+          <div className="space-y-3 pt-2 border-t border-slate-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Clinical Condition &amp; Doctor Assignment
+            </span>
+
             <div className="space-y-1.5">
-              <Label htmlFor="patient-age">Age</Label>
-              <Input
-                id="patient-age"
-                type="number"
-                min={0}
-                max={150}
-                {...register("age", { valueAsNumber: true })}
-              />
-              {errors.age ? (
-                <p className="text-xs text-rose-600">{errors.age.message}</p>
-              ) : null}
+              <Label htmlFor="patient-condition" className="text-xs font-semibold text-slate-700">
+                Medical Diagnosis / Primary Condition
+              </Label>
+              <div className="relative">
+                <Activity className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Input
+                  id="patient-condition"
+                  placeholder="e.g. Hypertension, Seasonal Asthma, Type 2 Diabetes"
+                  className="pl-9"
+                  {...register("condition")}
+                />
+              </div>
+              {errors.condition && (
+                <p className="text-xs text-rose-600 font-medium">
+                  {errors.condition.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-1.5">
-              <Label>Gender</Label>
+              <Label className="text-xs font-semibold text-slate-700">
+                Attending Physician
+              </Label>
               <Controller
+                name="doctorId"
                 control={control}
-                name="gender"
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select gender" />
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    disabled={lockDoctor}
+                  >
+                    <SelectTrigger className="h-9 bg-white">
+                      <SelectValue
+                        placeholder={
+                          doctorsLoading ? "Loading available physicians..." : "Select attending physician"
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Male">Male</SelectItem>
-                      <SelectItem value="Female">Female</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
+                      {(doctors ?? []).map((doc) => (
+                        <SelectItem key={doc._id} value={doc._id}>
+                          {doc.name} — {doc.specialization} ({doc.hospital})
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 )}
               />
-              {errors.gender ? (
-                <p className="text-xs text-rose-600">{errors.gender.message}</p>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="patient-phone">Phone Number</Label>
-              <Input
-                id="patient-phone"
-                placeholder="+880-1712-000201"
-                {...register("phone")}
-              />
-              {errors.phone ? (
-                <p className="text-xs text-rose-600">{errors.phone.message}</p>
-              ) : null}
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="patient-email">Email Address</Label>
-              <Input
-                id="patient-email"
-                type="email"
-                placeholder="tariqul.islam@example.com"
-                {...register("email")}
-              />
-              {errors.email ? (
-                <p className="text-xs text-rose-600">{errors.email.message}</p>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="patient-condition">Medical Condition</Label>
-            <Input
-              id="patient-condition"
-              placeholder="Hypertension"
-              {...register("condition")}
-            />
-            {errors.condition ? (
-              <p className="text-xs text-rose-600">{errors.condition.message}</p>
-            ) : null}
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Assigned Doctor</Label>
-            <Controller
-              control={control}
-              name="doctorId"
-              render={({ field }) => (
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  disabled={lockDoctor || doctorsLoading}
-                >
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={
-                        doctorsLoading ? "Loading physicians..." : "Select attending physician"
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(doctors ?? []).map((doc) => (
-                      <SelectItem key={doc._id} value={doc._id}>
-                        {doc.name} ({doc.specialization})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              {errors.doctorId && (
+                <p className="text-xs text-rose-600 font-medium">
+                  {errors.doctorId.message}
+                </p>
               )}
-            />
-            {errors.doctorId ? (
-              <p className="text-xs text-rose-600">{errors.doctorId.message}</p>
-            ) : null}
+            </div>
           </div>
 
-          <DialogFooter className="pt-2">
+          <DialogFooter className="pt-4 border-t border-slate-100 sm:justify-end gap-2">
             <Button
               type="button"
               variant="outline"
@@ -248,16 +317,20 @@ export function PatientFormDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+            >
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Saving...
+                  {isEditing ? "Saving Patient..." : "Registering Patient..."}
                 </>
               ) : isEditing ? (
-                "Save Changes"
+                "Save Patient Record"
               ) : (
-                "Register Patient"
+                "Complete Registration"
               )}
             </Button>
           </DialogFooter>

@@ -4,26 +4,29 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 focus-visible:ring-offset-1 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 focus-visible:ring-offset-1 active:scale-[0.99] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-teal-600 text-white shadow-xs hover:bg-teal-700 active:bg-teal-800",
+          "bg-blue-600 text-white shadow-xs hover:bg-blue-700 active:bg-blue-800",
+        navy:
+          "bg-slate-900 text-white shadow-xs hover:bg-slate-800 active:bg-slate-950",
         destructive:
           "bg-rose-600 text-white shadow-xs hover:bg-rose-700 active:bg-rose-800",
         outline:
-          "border border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-slate-900",
+          "border border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300",
         secondary:
           "bg-slate-100 text-slate-800 hover:bg-slate-200/80",
         ghost: "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
-        link: "text-teal-600 underline-offset-4 hover:underline",
+        link: "text-blue-600 underline-offset-4 hover:underline",
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-lg px-6",
+        lg: "h-10 rounded-lg px-5 font-semibold",
         icon: "h-9 w-9",
+        "icon-sm": "h-8 w-8 rounded-md",
       },
     },
     defaultVariants: {
@@ -54,4 +57,3 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 export { Button, buttonVariants };
-

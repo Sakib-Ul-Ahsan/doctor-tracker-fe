@@ -18,66 +18,193 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { BarChart3, Calendar, Stethoscope, Users } from "lucide-react";
 
 interface MonthlyStatsChartProps {
   data: MonthlyStatPoint[];
 }
 
-export function MonthlyStatsChart({ data }: MonthlyStatsChartProps) {
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{ name: string; value: number; fill: string; color?: string }>;
+  label?: string;
+}
+
+function MonthlyStatsTooltip({ active, payload, label }: CustomTooltipProps) {
+  if (!active || !payload || !payload.length) return null;
+
+  const patientsVal = payload.find((p) => p.name === "Patients")?.value ?? 0;
+  const doctorsVal = payload.find((p) => p.name === "Doctors")?.value ?? 0;
+  const total = patientsVal + doctorsVal;
+
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle>Monthly Patient &amp; Doctor Statistics</CardTitle>
-        <CardDescription>
-          6-month comparison of newly registered patients and onboarded doctors
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="h-[280px] w-full pt-2">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                tick={{ fill: "#64748b", fontSize: 11 }}
-              />
-              <YAxis
-                allowDecimals={false}
-                tickLine={false}
-                axisLine={false}
-                tick={{ fill: "#64748b", fontSize: 11 }}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#ffffff",
-                  borderRadius: "10px",
-                  border: "1px solid #e2e8f0",
-                  boxShadow: "0 10px 15px -3px rgba(15, 23, 42, 0.08)",
-                  fontSize: "12px",
-                }}
-              />
-              <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "8px" }} />
-              <Bar
-                dataKey="patients"
-                name="Patients"
-                fill="#0d9488"
-                radius={[6, 6, 0, 0]}
-                barSize={20}
-              />
-              <Bar
-                dataKey="doctors"
-                name="Doctors"
-                fill="#6366f1"
-                radius={[6, 6, 0, 0]}
-                barSize={20}
-              />
-            </BarChart>
-          </ResponsiveContainer>
+    <div className="rounded-xl border border-slate-200/90 bg-white/95 p-3.5 shadow-xl shadow-slate-900/10 backdrop-blur-md min-w-[200px] animate-in fade-in-0 zoom-in-95 duration-150">
+      <div className="flex items-center gap-2 border-b border-slate-100 pb-2 mb-2.5">
+        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-50 text-blue-600">
+          <Calendar className="h-3.5 w-3.5" />
         </div>
+        <p className="text-xs font-bold text-slate-900">{label}</p>
+      </div>
+
+      <div className="space-y-2 text-[11px]">
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-slate-600 font-medium">
+            <span className="h-2 w-2 rounded-full bg-blue-600" />
+            Registered Patients:
+          </span>
+          <span className="font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md">
+            {patientsVal}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 text-slate-600 font-medium">
+            <span className="h-2 w-2 rounded-full bg-slate-800" />
+            Onboarded Doctors:
+          </span>
+          <span className="font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-md">
+            {doctorsVal}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between pt-1.5 border-t border-slate-100 text-slate-500 font-semibold">
+          <span>Total Monthly Intake:</span>
+          <span className="text-slate-900 font-bold">{total} total</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function MonthlyStatsChart({ data }: MonthlyStatsChartProps) {
+  const totalPatients = data.reduce((acc, curr) => acc + (curr.patients || 0), 0);
+  const totalDoctors = data.reduce((acc, curr) => acc + (curr.doctors || 0), 0);
+
+  return (
+    <Card className="shadow-2xs border-slate-200/90 overflow-hidden flex flex-col justify-between">
+      <CardHeader className="pb-3 border-b border-slate-100/80 bg-slate-50/40">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-base font-bold text-slate-900">
+                Monthly Patient &amp; Doctor Intake
+              </CardTitle>
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                6-Month Trend
+              </span>
+            </div>
+            <CardDescription className="text-xs text-slate-500 mt-1">
+              Comparative intake of registered patients and onboarded physicians
+            </CardDescription>
+          </div>
+
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200/60 bg-blue-50/60 px-2.5 py-1 text-xs font-semibold text-blue-700 shadow-2xs">
+              <Users className="h-3 w-3" />
+              <span>{totalPatients} Patients</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-800 shadow-2xs">
+              <Stethoscope className="h-3 w-3" />
+              <span>{totalDoctors} Doctors</span>
+            </span>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="pt-4 pb-4">
+        {data.length === 0 ? (
+          <div className="flex h-[290px] flex-col items-center justify-center gap-2.5 text-center text-xs text-slate-400">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+              <BarChart3 className="h-5 w-5" />
+            </div>
+            <p className="font-semibold text-slate-700">No Historical Data Recorded</p>
+            <p className="max-w-xs text-slate-400">
+              Intake volume for the past 6 months will appear as records are registered.
+            </p>
+          </div>
+        ) : (
+          <div className="h-[290px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={data}
+                margin={{ top: 12, right: 12, left: -22, bottom: 4 }}
+                barCategoryGap="25%"
+                barGap={4}
+              >
+                <defs>
+                  <linearGradient id="patientMonthlyGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#3b82f6" />
+                    <stop offset="100%" stopColor="#1d4ed8" />
+                  </linearGradient>
+                  <linearGradient id="doctorMonthlyGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#334155" />
+                    <stop offset="100%" stopColor="#0f172a" />
+                  </linearGradient>
+                </defs>
+
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  horizontal={true}
+                  stroke="#f1f5f9"
+                />
+
+                <XAxis
+                  dataKey="label"
+                  tickLine={false}
+                  axisLine={{ stroke: "#e2e8f0" }}
+                  tick={{ fill: "#64748b", fontSize: 11, fontWeight: 500 }}
+                  dy={6}
+                />
+
+                <YAxis
+                  allowDecimals={false}
+                  tickLine={false}
+                  axisLine={{ stroke: "#e2e8f0" }}
+                  tick={{ fill: "#64748b", fontSize: 11, fontWeight: 500 }}
+                  dx={-4}
+                />
+
+                <Tooltip
+                  content={<MonthlyStatsTooltip />}
+                  cursor={{ fill: "rgba(241, 245, 249, 0.65)" }}
+                />
+
+                <Legend
+                  verticalAlign="top"
+                  align="right"
+                  wrapperStyle={{ paddingBottom: "12px", fontSize: "11px", fontWeight: 600 }}
+                  formatter={(value) => (
+                    <span className="text-slate-700 ml-1">{value}</span>
+                  )}
+                  iconType="circle"
+                  iconSize={7}
+                />
+
+                <Bar
+                  dataKey="patients"
+                  name="Patients"
+                  fill="url(#patientMonthlyGrad)"
+                  radius={[5, 5, 1, 1]}
+                  barSize={18}
+                  animationDuration={800}
+                  animationEasing="ease-out"
+                />
+
+                <Bar
+                  dataKey="doctors"
+                  name="Doctors"
+                  fill="url(#doctorMonthlyGrad)"
+                  radius={[5, 5, 1, 1]}
+                  barSize={18}
+                  animationDuration={800}
+                  animationEasing="ease-out"
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 }
-

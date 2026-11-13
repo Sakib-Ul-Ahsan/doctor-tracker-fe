@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useDashboardStats } from "@/hooks/use-dashboard";
 import { ApiClientError } from "@/lib/api";
-import { formatDate, getInitials } from "@/lib/utils";
+import { formatDate, getConditionBadgeVariant, getInitials } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/page-header";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { RegistrationTrendChart } from "@/components/dashboard/registration-trend-chart";
@@ -40,22 +40,37 @@ export default function DashboardPage() {
 
   const { data, isLoading, isError, error, refetch } = useDashboardStats();
 
+  // Current formatted date for greeting
+  const todayFormatted = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date());
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Clinical Operations Dashboard"
-        description="Real-time overview of physicians, patient caseloads, and registration analytics."
+        description={`Real-time administrative console • ${todayFormatted}`}
         actions={
-          <>
-            <Button variant="outline" onClick={() => setDoctorModalOpen(true)}>
-              <Plus className="h-4 w-4" />
-              Add Doctor
+          <div className="flex items-center gap-2.5">
+            <Button
+              variant="outline"
+              onClick={() => setDoctorModalOpen(true)}
+              className="gap-2"
+            >
+              <Plus className="h-4 w-4 text-blue-600" />
+              Add Physician
             </Button>
-            <Button onClick={() => setPatientModalOpen(true)}>
+            <Button
+              onClick={() => setPatientModalOpen(true)}
+              className="gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-600/20"
+            >
               <UserPlus className="h-4 w-4" />
               Register Patient
             </Button>
-          </>
+          </div>
         }
       />
 
@@ -66,7 +81,7 @@ export default function DashboardPage() {
               <Card key={i}>
                 <CardContent className="p-6 space-y-3">
                   <Skeleton className="h-3.5 w-24" />
-                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-9 w-20" />
                   <Skeleton className="h-3 w-36" />
                 </CardContent>
               </Card>
@@ -92,79 +107,84 @@ export default function DashboardPage() {
           {/* KPI Summary Cards */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
-              title="Total Doctors"
+              title="Total Physicians"
               value={data.summary.totalDoctors}
-              subtitle="Registered active physicians"
+              subtitle="Registered active medical doctors"
               icon={Stethoscope}
-              tone="teal"
+              tone="slate"
+              trendText="Active"
             />
             <StatCard
-              title="Total Patients"
+              title="Registered Patients"
               value={data.summary.totalPatients}
-              subtitle="Patients currently tracked"
+              subtitle="Active tracked patient profiles"
               icon={Users}
-              tone="indigo"
+              tone="blue"
+              trendText="Tracked"
             />
             <StatCard
-              title="Avg. Patients / Doctor"
+              title="Average Caseload"
               value={data.summary.avgPatientsPerDoctor}
-              subtitle="Mean caseload per physician"
+              subtitle="Mean patients assigned per doctor"
               icon={TrendingUp}
               tone="emerald"
+              trendText="Optimal"
             />
             <StatCard
               title="Specializations"
               value={data.summary.specializationsCount}
-              subtitle="Distinct medical departments"
+              subtitle="Represented medical specialties"
               icon={Activity}
               tone="amber"
+              trendText="Covered"
             />
           </div>
 
-          {/* Analytics Charts */}
+          {/* Analytics Visualizations */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <RegistrationTrendChart data={data.registrationTrends} />
             <DoctorDistributionChart data={data.doctorDistribution} />
             <MonthlyStatsChart data={data.monthlyStats} />
           </div>
 
-          {/* Recently Added Activity */}
+          {/* Real Backend Recent Activity Feeds */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
+            {/* Recently Added Doctors */}
+            <Card className="shadow-2xs">
+              <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-slate-100">
                 <div>
-                  <CardTitle>Recently Added Doctors</CardTitle>
-                  <CardDescription>Latest physicians onboarded to the directory</CardDescription>
+                  <CardTitle className="text-base">Recently Added Physicians</CardTitle>
+                  <CardDescription>Latest medical staff onboarded to the platform</CardDescription>
                 </div>
-                <Button variant="ghost" size="sm" asChild>
+                <Button variant="ghost" size="sm" asChild className="gap-1.5 text-xs text-blue-600 hover:text-blue-700">
                   <Link href="/doctors">
                     View all
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </Button>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-3">
                 {data.recentDoctors.length === 0 ? (
-                  <p className="py-8 text-center text-xs text-slate-400">
-                    No doctors registered yet.
-                  </p>
+                  <div className="py-10 text-center text-xs text-slate-400">
+                    No doctors onboarded yet.
+                  </div>
                 ) : (
                   <div className="divide-y divide-slate-100">
                     {data.recentDoctors.map((doc) => (
                       <Link
                         key={doc._id}
                         href={`/doctors/${doc._id}`}
-                        className="flex items-center justify-between gap-3 py-3 transition-colors hover:bg-slate-50/80 -mx-2 px-2 rounded-lg"
+                        className="group flex items-center justify-between gap-3 py-3 transition-colors hover:bg-slate-50/80 -mx-2 px-2 rounded-lg"
                       >
                         <div className="flex min-w-0 items-center gap-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-50 text-xs font-semibold text-teal-700 ring-1 ring-teal-200/70">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-xs font-bold text-white shadow-2xs group-hover:bg-blue-600 transition-colors">
                             {getInitials(doc.name)}
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-medium text-slate-900">
+                            <p className="truncate text-sm font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
                               {doc.name}
                             </p>
-                            <p className="flex items-center gap-1 truncate text-xs text-slate-500">
+                            <p className="flex items-center gap-1.5 truncate text-xs text-slate-500">
                               <Building2 className="h-3 w-3 shrink-0 text-slate-400" />
                               {doc.hospital}
                             </p>
@@ -172,7 +192,7 @@ export default function DashboardPage() {
                         </div>
                         <div className="flex shrink-0 flex-col items-end gap-1">
                           <Badge variant="default">{doc.specialization}</Badge>
-                          <span className="text-[11px] text-slate-400">
+                          <span className="text-[11px] text-slate-400 font-medium">
                             {doc.patientCount ?? 0} patient(s)
                           </span>
                         </div>
@@ -183,24 +203,25 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
+            {/* Recently Registered Patients */}
+            <Card className="shadow-2xs">
+              <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-slate-100">
                 <div>
-                  <CardTitle>Recently Registered Patients</CardTitle>
-                  <CardDescription>Newest patient records and assigned physicians</CardDescription>
+                  <CardTitle className="text-base">Recently Registered Patients</CardTitle>
+                  <CardDescription>New clinical intake records and doctor assignments</CardDescription>
                 </div>
-                <Button variant="ghost" size="sm" asChild>
+                <Button variant="ghost" size="sm" asChild className="gap-1.5 text-xs text-blue-600 hover:text-blue-700">
                   <Link href="/patients">
                     View all
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </Button>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-3">
                 {data.recentPatients.length === 0 ? (
-                  <p className="py-8 text-center text-xs text-slate-400">
+                  <div className="py-10 text-center text-xs text-slate-400">
                     No patients registered yet.
-                  </p>
+                  </div>
                 ) : (
                   <div className="divide-y divide-slate-100">
                     {data.recentPatients.map((patient) => {
@@ -213,25 +234,27 @@ export default function DashboardPage() {
                         <Link
                           key={patient._id}
                           href={`/patients/${patient._id}`}
-                          className="flex items-center justify-between gap-3 py-3 transition-colors hover:bg-slate-50/80 -mx-2 px-2 rounded-lg"
+                          className="group flex items-center justify-between gap-3 py-3 transition-colors hover:bg-slate-50/80 -mx-2 px-2 rounded-lg"
                         >
                           <div className="flex min-w-0 items-center gap-3">
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-semibold text-indigo-700 ring-1 ring-indigo-200/70">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xs font-bold text-blue-700 border border-blue-200/60 group-hover:border-blue-400 transition-colors">
                               {getInitials(patient.name)}
                             </div>
                             <div className="min-w-0">
-                              <p className="truncate text-sm font-medium text-slate-900">
+                              <p className="truncate text-sm font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
                                 {patient.name}
                               </p>
                               <p className="truncate text-xs text-slate-500">
-                                {doctorObj ? doctorObj.name : "Unassigned"} &bull;{" "}
+                                {doctorObj ? `Attending: ${doctorObj.name}` : "Unassigned"} &bull;{" "}
                                 {formatDate(patient.createdAt)}
                               </p>
                             </div>
                           </div>
                           <div className="flex shrink-0 flex-col items-end gap-1">
-                            <Badge variant="indigo">{patient.condition}</Badge>
-                            <span className="text-[11px] text-slate-400">
+                            <Badge variant={getConditionBadgeVariant(patient.condition)}>
+                              {patient.condition}
+                            </Badge>
+                            <span className="text-[11px] text-slate-400 font-medium">
                               {patient.age} yrs, {patient.gender}
                             </span>
                           </div>
@@ -251,4 +274,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

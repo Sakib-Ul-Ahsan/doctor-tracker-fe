@@ -4,12 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   Eye,
+  FilterX,
   Mail,
   Pencil,
   Phone,
   RotateCcw,
   Search,
-  Stethoscope,
   Trash2,
   UserPlus,
   Users,
@@ -18,7 +18,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useDoctorOptions } from "@/hooks/use-doctors";
 import { usePatients } from "@/hooks/use-patients";
 import { ApiClientError } from "@/lib/api";
-import { formatDate, getInitials } from "@/lib/utils";
+import { formatDate, getConditionBadgeVariant, getInitials } from "@/lib/utils";
 import { Patient } from "@/types/api";
 import { PageHeader } from "@/components/layout/page-header";
 import { PatientFormDialog } from "@/components/patients/patient-form-dialog";
@@ -72,12 +72,13 @@ export default function PatientsPage() {
     limit: 10,
   });
 
-  const hasActiveFilters =
-    Boolean(searchInput) ||
-    condition !== "all" ||
-    doctorId !== "all" ||
-    Boolean(startDate) ||
-    Boolean(endDate);
+  const activeFiltersCount = [
+    Boolean(searchInput),
+    condition !== "all",
+    doctorId !== "all",
+    Boolean(startDate),
+    Boolean(endDate),
+  ].filter(Boolean).length;
 
   const resetFilters = () => {
     setSearchInput("");
@@ -102,20 +103,21 @@ export default function PatientsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Patients Registry"
-        description="Track registered patients, medical conditions, and attending physician assignments."
+        description="Comprehensive clinical patient database, medical conditions, attending physician assignments, and demographic intake."
         actions={
-          <Button onClick={openCreate}>
+          <Button onClick={openCreate} className="gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-600/20">
             <UserPlus className="h-4 w-4" />
             Register Patient
           </Button>
         }
       />
 
-      {/* Search & Filter Toolbar */}
-      <Card className="p-4">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-12 md:items-end">
-          <div className="md:col-span-3 space-y-1">
-            <label className="text-xs font-medium text-slate-600">
+      {/* Advanced Filter Toolbar */}
+      <Card className="p-4 sm:p-5 shadow-2xs border-slate-200/90">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-12 md:items-end">
+          {/* Search Query */}
+          <div className="md:col-span-3 space-y-1.5">
+            <label className="text-xs font-semibold text-slate-700">
               Search Patients
             </label>
             <div className="relative">
@@ -126,14 +128,27 @@ export default function PatientsPage() {
                   setSearchInput(e.target.value);
                   setPage(1);
                 }}
-                placeholder="Name, email, phone, condition..."
-                className="pl-9"
+                placeholder="Name, email, condition..."
+                className="pl-9 pr-8 bg-white"
               />
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchInput("");
+                    setPage(1);
+                  }}
+                  className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 text-xs"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           </div>
 
-          <div className="md:col-span-2 space-y-1">
-            <label className="text-xs font-medium text-slate-600">
+          {/* Condition Filter */}
+          <div className="md:col-span-2 space-y-1.5">
+            <label className="text-xs font-semibold text-slate-700">
               Medical Condition
             </label>
             <Select
@@ -143,7 +158,7 @@ export default function PatientsPage() {
                 setPage(1);
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger className="h-9 bg-white">
                 <SelectValue placeholder="All Conditions" />
               </SelectTrigger>
               <SelectContent>
@@ -157,9 +172,10 @@ export default function PatientsPage() {
             </Select>
           </div>
 
-          <div className="md:col-span-2 space-y-1">
-            <label className="text-xs font-medium text-slate-600">
-              Assigned Doctor
+          {/* Assigned Doctor Filter */}
+          <div className="md:col-span-3 space-y-1.5">
+            <label className="text-xs font-semibold text-slate-700">
+              Attending Physician
             </label>
             <Select
               value={doctorId}
@@ -168,66 +184,72 @@ export default function PatientsPage() {
                 setPage(1);
               }}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="All Doctors" />
+              <SelectTrigger className="h-9 bg-white">
+                <SelectValue placeholder="All Physicians" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Doctors</SelectItem>
+                <SelectItem value="all">All Physicians</SelectItem>
                 {(doctorOptions ?? []).map((doc) => (
                   <SelectItem key={doc._id} value={doc._id}>
-                    {doc.name}
+                    {doc.name} ({doc.specialization})
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          <div className="md:col-span-2 space-y-1">
-            <label className="text-xs font-medium text-slate-600">
-              Registered From
-            </label>
-            <Input
-              type="date"
-              value={startDate}
-              onChange={(e) => {
-                setStartDate(e.target.value);
-                setPage(1);
-              }}
-            />
+          {/* Date Filter Range */}
+          <div className="md:col-span-3 grid grid-cols-2 gap-2">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700">From</label>
+              <Input
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  setPage(1);
+                }}
+                className="h-9 bg-white"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700">To</label>
+              <Input
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  setPage(1);
+                }}
+                className="h-9 bg-white"
+              />
+            </div>
           </div>
 
-          <div className="md:col-span-2 space-y-1">
-            <label className="text-xs font-medium text-slate-600">
-              Registered To
-            </label>
-            <Input
-              type="date"
-              value={endDate}
-              onChange={(e) => {
-                setEndDate(e.target.value);
-                setPage(1);
-              }}
-            />
-          </div>
-
-          <div className="md:col-span-1 flex justify-end">
+          {/* Reset Filters Button */}
+          <div className="md:col-span-1 flex items-end">
             <Button
               type="button"
               variant="outline"
               size="icon"
               onClick={resetFilters}
-              disabled={!hasActiveFilters}
-              title="Reset filters"
-              aria-label="Reset filters"
+              disabled={activeFiltersCount === 0}
+              title={activeFiltersCount > 0 ? `Reset ${activeFiltersCount} filter(s)` : "No active filters"}
+              className="w-full h-9 gap-1.5 text-slate-600 hover:text-slate-900 relative"
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw className="h-3.5 w-3.5" />
+              {activeFiltersCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+                  {activeFiltersCount}
+                </span>
+              )}
             </Button>
           </div>
         </div>
       </Card>
 
       {/* Patients Table Card */}
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden shadow-2xs border-slate-200/90">
         {isLoading ? (
           <TableSkeleton rows={6} columns={6} />
         ) : isError ? (
@@ -245,19 +267,20 @@ export default function PatientsPage() {
           <div className="p-6">
             <EmptyState
               icon={Users}
-              title={hasActiveFilters ? "No matching patients found" : "No patients registered yet"}
+              title={activeFiltersCount > 0 ? "No matching patients found" : "No patients registered yet"}
               description={
-                hasActiveFilters
-                  ? "Try clearing or adjusting your search query, condition, doctor, or date filters."
-                  : "Register your first patient and assign them to an attending physician."
+                activeFiltersCount > 0
+                  ? "Try clearing or adjusting your search keywords, doctor, or condition filters."
+                  : "Start populating the clinic records by registering your first patient."
               }
               action={
-                hasActiveFilters ? (
-                  <Button variant="outline" onClick={resetFilters}>
+                activeFiltersCount > 0 ? (
+                  <Button variant="outline" onClick={resetFilters} className="gap-2">
+                    <FilterX className="h-4 w-4" />
                     Clear Filters
                   </Button>
                 ) : (
-                  <Button onClick={openCreate}>
+                  <Button onClick={openCreate} className="gap-2 bg-blue-600 hover:bg-blue-700">
                     <UserPlus className="h-4 w-4" />
                     Register Patient
                   </Button>
@@ -270,12 +293,12 @@ export default function PatientsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Patient</TableHead>
-                  <TableHead>Age &amp; Gender</TableHead>
+                  <TableHead className="w-[260px]">Patient Record</TableHead>
+                  <TableHead>Demographics</TableHead>
                   <TableHead>Medical Condition</TableHead>
-                  <TableHead>Assigned Doctor</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Registered</TableHead>
+                  <TableHead>Attending Physician</TableHead>
+                  <TableHead>Contact Information</TableHead>
+                  <TableHead>Intake Date</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -287,82 +310,117 @@ export default function PatientsPage() {
                       : null;
 
                   return (
-                    <TableRow key={patient._id}>
+                    <TableRow key={patient._id} className="group">
+                      {/* Patient Name & Initials */}
                       <TableCell>
                         <Link
                           href={`/patients/${patient._id}`}
-                          className="group flex items-center gap-3"
+                          className="flex items-center gap-3 group-hover:opacity-90"
                         >
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-semibold text-indigo-700 ring-1 ring-indigo-200/80">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xs font-bold text-blue-700 border border-blue-200/60 group-hover:border-blue-400 transition-colors">
                             {getInitials(patient.name)}
                           </div>
-                          <span className="font-medium text-slate-900 group-hover:text-teal-700 transition-colors">
-                            {patient.name}
-                          </span>
+                          <div className="min-w-0">
+                            <p className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                              {patient.name}
+                            </p>
+                            <p className="truncate text-xs text-slate-400">
+                              MRN-{patient._id.slice(-6).toUpperCase()}
+                            </p>
+                          </div>
                         </Link>
                       </TableCell>
-                      <TableCell className="text-xs text-slate-600 whitespace-nowrap">
-                        {patient.age} yrs &bull; {patient.gender}
-                      </TableCell>
+
+                      {/* Demographics */}
                       <TableCell>
-                        <Badge variant="indigo">{patient.condition}</Badge>
+                        <span className="text-xs font-medium text-slate-700">
+                          {patient.age} yrs &bull; {patient.gender}
+                        </span>
                       </TableCell>
+
+                      {/* Medical Condition Badge */}
+                      <TableCell>
+                        <Badge variant={getConditionBadgeVariant(patient.condition)}>
+                          {patient.condition}
+                        </Badge>
+                      </TableCell>
+
+                      {/* Attending Physician */}
                       <TableCell>
                         {doctorObj ? (
                           <Link
                             href={`/doctors/${doctorObj._id}`}
-                            className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-700 hover:underline"
+                            className="inline-flex items-center gap-2 group/doc hover:text-blue-600 transition-colors"
                           >
-                            <Stethoscope className="h-3.5 w-3.5 shrink-0" />
-                            {doctorObj.name}
+                            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-bold text-slate-700 group-hover/doc:bg-blue-100 group-hover/doc:text-blue-700">
+                              {getInitials(doctorObj.name)}
+                            </div>
+                            <div className="text-xs">
+                              <p className="font-medium text-slate-900 group-hover/doc:text-blue-600">
+                                {doctorObj.name}
+                              </p>
+                              <p className="text-[11px] text-slate-400">
+                                {doctorObj.specialization}
+                              </p>
+                            </div>
                           </Link>
                         ) : (
-                          <span className="text-xs text-slate-400">Unassigned</span>
+                          <span className="text-xs text-slate-400 italic">
+                            Unassigned
+                          </span>
                         )}
                       </TableCell>
+
+                      {/* Contact */}
                       <TableCell>
-                        <div className="space-y-0.5 text-xs">
-                          <p className="flex items-center gap-1.5 text-slate-700">
-                            <Mail className="h-3 w-3 text-slate-400" />
-                            {patient.email}
+                        <div className="space-y-0.5 text-xs text-slate-600">
+                          <p className="flex items-center gap-1.5">
+                            <Phone className="h-3 w-3 text-slate-400 shrink-0" />
+                            <span>{patient.phone}</span>
                           </p>
-                          <p className="flex items-center gap-1.5 text-slate-500">
-                            <Phone className="h-3 w-3 text-slate-400" />
-                            {patient.phone}
+                          <p className="flex items-center gap-1.5 text-slate-400">
+                            <Mail className="h-3 w-3 text-slate-400 shrink-0" />
+                            <span className="truncate max-w-[160px]">{patient.email}</span>
                           </p>
                         </div>
                       </TableCell>
+
+                      {/* Registration Date */}
                       <TableCell className="text-xs text-slate-500 whitespace-nowrap">
                         {formatDate(patient.createdAt)}
                       </TableCell>
+
+                      {/* Actions */}
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
                           <Button
                             variant="ghost"
-                            size="icon"
+                            size="icon-sm"
                             asChild
-                            title="View patient details"
+                            title="View patient profile"
+                            className="text-slate-500 hover:text-blue-600 hover:bg-blue-50"
                           >
                             <Link href={`/patients/${patient._id}`}>
-                              <Eye className="h-4 w-4 text-slate-500" />
+                              <Eye className="h-4 w-4" />
                             </Link>
                           </Button>
                           <Button
                             variant="ghost"
-                            size="icon"
+                            size="icon-sm"
                             onClick={() => openEdit(patient)}
                             title="Edit patient"
+                            className="text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                           >
-                            <Pencil className="h-4 w-4 text-slate-500" />
+                            <Pencil className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
-                            size="icon"
+                            size="icon-sm"
                             onClick={() => setDeletingPatient(patient)}
                             title="Delete patient"
-                            className="hover:bg-rose-50 hover:text-rose-600"
+                            className="text-slate-400 hover:bg-rose-50 hover:text-rose-600"
                           >
-                            <Trash2 className="h-4 w-4 text-slate-500" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
@@ -397,4 +455,3 @@ export default function PatientsPage() {
     </div>
   );
 }
-

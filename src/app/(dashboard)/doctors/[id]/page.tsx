@@ -21,7 +21,7 @@ import {
 import { useDebounce } from "@/hooks/use-debounce";
 import { useDoctor, useDoctorPatients } from "@/hooks/use-doctors";
 import { ApiClientError } from "@/lib/api";
-import { formatDate, formatDateTime, getInitials } from "@/lib/utils";
+import { formatDate, formatDateTime, getConditionBadgeVariant, getInitials } from "@/lib/utils";
 import { Patient } from "@/types/api";
 import { PageHeader } from "@/components/layout/page-header";
 import { DoctorFormDialog } from "@/components/doctors/doctor-form-dialog";
@@ -71,7 +71,7 @@ export default function DoctorDetailsPage() {
     return (
       <div className="space-y-6">
         <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-44 rounded-xl" />
+        <Skeleton className="h-56 rounded-xl" />
         <Skeleton className="h-80 rounded-xl" />
       </div>
     );
@@ -81,17 +81,17 @@ export default function DoctorDetailsPage() {
     return (
       <div className="space-y-4">
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/doctors">
+          <Link href="/doctors" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Back to Doctors
+            Back to Physicians Directory
           </Link>
         </Button>
         <ErrorState
-          title="Doctor not found"
+          title="Physician Record Not Found"
           message={
             doctorQuery.error instanceof ApiClientError
               ? doctorQuery.error.message
-              : "Could not load physician details."
+              : "Could not load the requested physician details."
           }
           onRetry={() => void doctorQuery.refetch()}
         />
@@ -107,83 +107,139 @@ export default function DoctorDetailsPage() {
         breadcrumb={
           <Link
             href="/doctors"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-teal-700 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            Back to Doctors Directory
+            Back to Physicians Directory
           </Link>
         }
         title={doctor.name}
         description={`${doctor.specialization} • ${doctor.hospital}`}
         actions={
-          <>
-            <Button variant="outline" onClick={() => setEditDoctorOpen(true)}>
+          <div className="flex items-center gap-2.5">
+            <Button
+              variant="outline"
+              onClick={() => setEditDoctorOpen(true)}
+              className="gap-2"
+            >
               <Pencil className="h-4 w-4" />
               Edit Profile
             </Button>
             <Button
               variant="destructive"
               onClick={() => setDeleteDoctorOpen(true)}
+              className="gap-2"
             >
               <Trash2 className="h-4 w-4" />
-              Delete Doctor
+              Delete Physician
             </Button>
-          </>
+          </div>
         }
       />
 
-      {/* Doctor Profile Card */}
-      <Card>
-        <CardContent className="p-6">
+      {/* Executive Doctor Profile Card */}
+      <Card className="shadow-2xs overflow-hidden border-slate-200/90">
+        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 px-6 py-6 text-white sm:px-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-teal-600 text-lg font-bold text-white shadow-sm shadow-teal-600/20">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-xl font-bold text-white shadow-inner backdrop-blur-md ring-2 ring-white/20">
                 {getInitials(doctor.name)}
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-lg font-semibold text-slate-900">{doctor.name}</h2>
-                  <Badge variant="default">{doctor.specialization}</Badge>
+                  <h2 className="text-xl font-bold tracking-tight text-white">{doctor.name}</h2>
+                  <Badge variant="navy" className="border-white/30 text-white bg-white/20 backdrop-blur-xs">
+                    {doctor.specialization}
+                  </Badge>
                 </div>
-                <p className="flex items-center gap-1.5 text-sm text-slate-600">
-                  <Building2 className="h-4 w-4 text-slate-400" />
+                <p className="flex items-center gap-1.5 text-sm text-slate-300">
+                  <Building2 className="h-4 w-4 text-blue-400 shrink-0" />
                   {doctor.hospital}
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2 md:gap-x-8">
-              <div className="flex items-center gap-2 text-slate-600">
-                <Mail className="h-4 w-4 text-slate-400" />
-                <span>{doctor.email}</span>
+            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-300">
+              <div className="rounded-xl bg-white/10 px-3.5 py-2 backdrop-blur-xs border border-white/10">
+                <span className="block text-[10px] uppercase font-bold text-slate-400">Total Caseload</span>
+                <span className="text-lg font-bold text-white">{doctor.patientCount ?? 0} Patients</span>
               </div>
-              <div className="flex items-center gap-2 text-slate-600">
-                <Phone className="h-4 w-4 text-slate-400" />
-                <span>{doctor.phone}</span>
+              <div className="rounded-xl bg-white/10 px-3.5 py-2 backdrop-blur-xs border border-white/10">
+                <span className="block text-[10px] uppercase font-bold text-slate-400">Status</span>
+                <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  Active Physician
+                </span>
               </div>
-              <div className="flex items-center gap-2 text-slate-500">
-                <Calendar className="h-4 w-4 text-slate-400" />
-                <span>Joined {formatDate(doctor.createdAt)}</span>
+            </div>
+          </div>
+        </div>
+
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/50 p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <Mail className="h-4 w-4" />
               </div>
-              <div className="flex items-center gap-2 text-slate-500">
-                <Clock className="h-4 w-4 text-slate-400" />
-                <span>Updated {formatDateTime(doctor.updatedAt)}</span>
+              <div className="min-w-0">
+                <span className="block text-[11px] font-medium text-slate-400">Email Address</span>
+                <span className="truncate text-xs font-semibold text-slate-800" title={doctor.email}>
+                  {doctor.email}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/50 p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <Phone className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <span className="block text-[11px] font-medium text-slate-400">Phone Number</span>
+                <span className="truncate text-xs font-semibold text-slate-800">
+                  {doctor.phone}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/50 p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                <Calendar className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <span className="block text-[11px] font-medium text-slate-400">Onboarding Date</span>
+                <span className="text-xs font-semibold text-slate-800">
+                  {formatDate(doctor.createdAt)}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/50 p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                <Clock className="h-4 w-4" />
+              </div>
+              <div className="min-w-0">
+                <span className="block text-[11px] font-medium text-slate-400">Last Record Update</span>
+                <span className="text-xs font-semibold text-slate-800">
+                  {formatDateTime(doctor.updatedAt)}
+                </span>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Assigned Patients Section */}
-      <Card className="overflow-hidden">
-        <CardHeader className="flex flex-col gap-4 border-b border-slate-100 sm:flex-row sm:items-center sm:justify-between">
+      {/* Associated Assigned Patients Section */}
+      <Card className="overflow-hidden shadow-2xs border-slate-200/90">
+        <CardHeader className="flex flex-col gap-4 border-b border-slate-100 sm:flex-row sm:items-center sm:justify-between bg-slate-50/40">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              Assigned Patients
-              <Badge variant="secondary">{doctor.patientCount ?? 0}</Badge>
+            <CardTitle className="flex items-center gap-2 text-base">
+              Assigned Patients Directory
+              <Badge variant="default" className="text-xs">
+                {doctor.patientCount ?? 0} Active
+              </Badge>
             </CardTitle>
             <p className="mt-1 text-xs text-slate-500">
-              Patients currently under the care of {doctor.name}.
+              Patients currently undergoing clinical treatment under {doctor.name}.
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -196,12 +252,15 @@ export default function DoctorDetailsPage() {
                   setPage(1);
                 }}
                 placeholder="Search assigned patients..."
-                className="pl-9"
+                className="pl-9 bg-white"
               />
             </div>
-            <Button onClick={() => setAddPatientOpen(true)}>
+            <Button
+              onClick={() => setAddPatientOpen(true)}
+              className="gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-600/20"
+            >
               <UserPlus className="h-4 w-4" />
-              Add Patient
+              Assign Patient
             </Button>
           </div>
         </CardHeader>
@@ -220,26 +279,23 @@ export default function DoctorDetailsPage() {
             />
           </div>
         ) : !patientsQuery.data || patientsQuery.data.patients.length === 0 ? (
-          <div className="p-6">
+          <div className="p-8">
             <EmptyState
               icon={Users}
-              title={searchInput ? "No matching patients" : "No patients assigned yet"}
+              title={searchInput ? "No matching patients found" : "No patients assigned yet"}
               description={
                 searchInput
-                  ? "No assigned patients matched your search query."
-                  : `Register a new patient directly under ${doctor.name} to start tracking their care.`
+                  ? "Try adjusting your search keywords."
+                  : `There are currently no patients assigned to ${doctor.name}. Add a patient to start tracking their care.`
               }
               action={
-                searchInput ? (
-                  <Button variant="outline" onClick={() => setSearchInput("")}>
-                    Clear Search
-                  </Button>
-                ) : (
-                  <Button onClick={() => setAddPatientOpen(true)}>
-                    <UserPlus className="h-4 w-4" />
-                    Add Patient to Doctor
-                  </Button>
-                )
+                <Button
+                  onClick={() => setAddPatientOpen(true)}
+                  className="gap-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Assign New Patient
+                </Button>
               }
             />
           </div>
@@ -248,9 +304,9 @@ export default function DoctorDetailsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Patient</TableHead>
+                  <TableHead className="w-[260px]">Patient</TableHead>
                   <TableHead>Demographics</TableHead>
-                  <TableHead>Condition</TableHead>
+                  <TableHead>Clinical Condition</TableHead>
                   <TableHead>Contact</TableHead>
                   <TableHead>Registered</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -258,43 +314,70 @@ export default function DoctorDetailsPage() {
               </TableHeader>
               <TableBody>
                 {patientsQuery.data.patients.map((patient) => (
-                  <TableRow key={patient._id}>
+                  <TableRow key={patient._id} className="group">
                     <TableCell>
                       <Link
                         href={`/patients/${patient._id}`}
-                        className="font-medium text-slate-900 hover:text-teal-700 transition-colors"
+                        className="flex items-center gap-3 group-hover:opacity-90"
                       >
-                        {patient.name}
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xs font-bold text-blue-700 border border-blue-200/60 group-hover:border-blue-400 transition-colors">
+                          {getInitials(patient.name)}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                            {patient.name}
+                          </p>
+                          <p className="truncate text-xs text-slate-400">
+                            ID: {patient._id.slice(-6)}
+                          </p>
+                        </div>
                       </Link>
                     </TableCell>
-                    <TableCell className="text-xs text-slate-600">
-                      {patient.age} yrs &bull; {patient.gender}
-                    </TableCell>
+
                     <TableCell>
-                      <Badge variant="indigo">{patient.condition}</Badge>
+                      <span className="text-xs font-medium text-slate-700">
+                        {patient.age} yrs &bull; {patient.gender}
+                      </span>
                     </TableCell>
-                    <TableCell className="text-xs text-slate-600">
-                      <div>{patient.email}</div>
-                      <div className="text-slate-400">{patient.phone}</div>
+
+                    <TableCell>
+                      <Badge variant={getConditionBadgeVariant(patient.condition)}>
+                        {patient.condition}
+                      </Badge>
                     </TableCell>
-                    <TableCell className="text-xs text-slate-500">
+
+                    <TableCell>
+                      <div className="space-y-0.5 text-xs text-slate-600">
+                        <p>{patient.phone}</p>
+                        <p className="text-slate-400">{patient.email}</p>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="text-xs text-slate-500 whitespace-nowrap">
                       {formatDate(patient.createdAt)}
                     </TableCell>
+
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="icon" asChild title="View patient">
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          asChild
+                          title="View patient record"
+                          className="text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+                        >
                           <Link href={`/patients/${patient._id}`}>
-                            <Eye className="h-4 w-4 text-slate-500" />
+                            <Eye className="h-4 w-4" />
                           </Link>
                         </Button>
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon-sm"
                           onClick={() => setRemovingPatient(patient)}
-                          className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                          title="Remove / Reassign patient"
+                          className="text-slate-400 hover:bg-rose-50 hover:text-rose-600"
                         >
                           <UserMinus className="h-4 w-4" />
-                          Remove
                         </Button>
                       </div>
                     </TableCell>
@@ -322,14 +405,14 @@ export default function DoctorDetailsPage() {
         open={deleteDoctorOpen}
         onOpenChange={setDeleteDoctorOpen}
         doctor={doctor}
-        onDeleted={() => router.replace("/doctors")}
+        onDeleted={() => router.push("/doctors")}
       />
 
       <PatientFormDialog
         open={addPatientOpen}
         onOpenChange={setAddPatientOpen}
         defaultDoctorId={doctor._id}
-        lockDoctor
+        lockDoctor={true}
       />
 
       <RemovePatientDialog
@@ -343,4 +426,3 @@ export default function DoctorDetailsPage() {
     </div>
   );
 }
-

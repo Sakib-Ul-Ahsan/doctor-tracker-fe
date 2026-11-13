@@ -3,7 +3,14 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import {
+  Building2,
+  Loader2,
+  Mail,
+  Phone,
+  Stethoscope,
+  User,
+} from "lucide-react";
 import { doctorFormSchema, DoctorFormValues } from "@/lib/validations";
 import { useCreateDoctor, useUpdateDoctor } from "@/hooks/use-doctors";
 import { Doctor } from "@/types/api";
@@ -13,7 +20,6 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -79,83 +85,141 @@ export function DoctorFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Doctor Profile" : "Add New Doctor"}</DialogTitle>
-          <DialogDescription>
-            {isEditing
-              ? "Update physician credentials, hospital affiliation, and contact details."
-              : "Register a new physician in the clinical directory."}
-          </DialogDescription>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="doctor-name">Full Name</Label>
-            <Input
-              id="doctor-name"
-              placeholder="Dr. Mahmudul Hasan"
-              {...register("name")}
-            />
-            {errors.name ? (
-              <p className="text-xs text-rose-600">{errors.name.message}</p>
-            ) : null}
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="doctor-specialization">Specialization</Label>
-              <Input
-                id="doctor-specialization"
-                placeholder="Cardiology"
-                {...register("specialization")}
-              />
-              {errors.specialization ? (
-                <p className="text-xs text-rose-600">{errors.specialization.message}</p>
-              ) : null}
+      <DialogContent className="sm:max-w-[520px] p-0 overflow-hidden">
+        {/* Header with gradient badge */}
+        <div className="bg-slate-50 border-b border-slate-100 p-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm shadow-blue-600/20">
+              <Stethoscope className="h-5 w-5" />
             </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="doctor-hospital">Hospital / Clinic</Label>
-              <Input
-                id="doctor-hospital"
-                placeholder="Dhaka Medical College Hospital"
-                {...register("hospital")}
-              />
-              {errors.hospital ? (
-                <p className="text-xs text-rose-600">{errors.hospital.message}</p>
-              ) : null}
+            <div>
+              <DialogTitle className="text-lg font-bold text-slate-900">
+                {isEditing ? "Edit Physician Profile" : "Onboard New Physician"}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-500 mt-0.5">
+                {isEditing
+                  ? "Update physician credentials, hospital affiliation, and contact details."
+                  : "Register a verified doctor into the clinical operations network."}
+              </DialogDescription>
             </div>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+          {/* Section 1: Clinical Identity */}
+          <div className="space-y-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Professional Identity
+            </span>
+
             <div className="space-y-1.5">
-              <Label htmlFor="doctor-phone">Phone Number</Label>
-              <Input
-                id="doctor-phone"
-                placeholder="+880-1711-000101"
-                {...register("phone")}
-              />
-              {errors.phone ? (
-                <p className="text-xs text-rose-600">{errors.phone.message}</p>
-              ) : null}
+              <Label htmlFor="doctor-name" className="text-xs font-semibold text-slate-700">
+                Full Legal / Professional Name
+              </Label>
+              <div className="relative">
+                <User className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <Input
+                  id="doctor-name"
+                  placeholder="Dr. Mahmudul Hasan"
+                  className="pl-9"
+                  {...register("name")}
+                />
+              </div>
+              {errors.name && (
+                <p className="text-xs text-rose-600 font-medium">{errors.name.message}</p>
+              )}
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="doctor-email">Email Address</Label>
-              <Input
-                id="doctor-email"
-                type="email"
-                placeholder="mahmudul.hasan@hospital.org.bd"
-                {...register("email")}
-              />
-              {errors.email ? (
-                <p className="text-xs text-rose-600">{errors.email.message}</p>
-              ) : null}
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="doctor-spec" className="text-xs font-semibold text-slate-700">
+                  Medical Specialization
+                </Label>
+                <div className="relative">
+                  <Stethoscope className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="doctor-spec"
+                    placeholder="e.g. Cardiology"
+                    className="pl-9"
+                    {...register("specialization")}
+                  />
+                </div>
+                {errors.specialization && (
+                  <p className="text-xs text-rose-600 font-medium">
+                    {errors.specialization.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="doctor-hospital" className="text-xs font-semibold text-slate-700">
+                  Hospital Affiliation
+                </Label>
+                <div className="relative">
+                  <Building2 className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="doctor-hospital"
+                    placeholder="e.g. Square Hospital, Dhaka"
+                    className="pl-9"
+                    {...register("hospital")}
+                  />
+                </div>
+                {errors.hospital && (
+                  <p className="text-xs text-rose-600 font-medium">
+                    {errors.hospital.message}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
-          <DialogFooter className="pt-2">
+          {/* Section 2: Contact Details */}
+          <div className="space-y-3 pt-2 border-t border-slate-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Direct Contact Details
+            </span>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="doctor-email" className="text-xs font-semibold text-slate-700">
+                  Email Address
+                </Label>
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="doctor-email"
+                    type="email"
+                    placeholder="doctor@hospital.org"
+                    className="pl-9"
+                    {...register("email")}
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-xs text-rose-600 font-medium">{errors.email.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="doctor-phone" className="text-xs font-semibold text-slate-700">
+                  Phone Number
+                </Label>
+                <div className="relative">
+                  <Phone className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="doctor-phone"
+                    placeholder="+880-1711-XXXXXX"
+                    className="pl-9"
+                    {...register("phone")}
+                  />
+                </div>
+                {errors.phone && (
+                  <p className="text-xs text-rose-600 font-medium">{errors.phone.message}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="pt-4 border-t border-slate-100 sm:justify-end gap-2">
             <Button
               type="button"
               variant="outline"
@@ -164,16 +228,20 @@ export function DoctorFormDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+            >
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Saving...
+                  {isEditing ? "Saving Changes..." : "Registering Doctor..."}
                 </>
               ) : isEditing ? (
-                "Save Changes"
+                "Save Profile Changes"
               ) : (
-                "Create Doctor"
+                "Register Physician"
               )}
             </Button>
           </DialogFooter>
@@ -182,4 +250,3 @@ export function DoctorFormDialog({
     </Dialog>
   );
 }
-
