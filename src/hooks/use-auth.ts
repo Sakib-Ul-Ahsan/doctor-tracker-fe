@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { apiRequest, ApiClientError } from "@/lib/api";
+import { apiRequest, ApiClientError, setStoredToken } from "@/lib/api";
 import { LoginFormValues } from "@/lib/validations";
 import { AdminUser } from "@/types/api";
 
@@ -29,11 +29,14 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (credentials: LoginFormValues) => {
-      const response = await apiRequest<{ admin: AdminUser }>("/auth/login", {
+      const response = await apiRequest<{ admin: AdminUser; token?: string }>("/auth/login", {
         method: "POST",
         body: credentials,
         skipUnauthorizedRedirect: true,
       });
+      if (response.data.token) {
+        setStoredToken(response.data.token);
+      }
       return response.data.admin;
     },
     onSuccess: (admin) => {
@@ -55,10 +58,14 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: async () => {
-      await apiRequest<{ loggedOut: boolean }>("/auth/logout", {
-        method: "POST",
-        skipUnauthorizedRedirect: true,
-      });
+      try {
+        await apiRequest<{ loggedOut: boolean }>("/auth/logout", {
+          method: "POST",
+          skipUnauthorizedRedirect: true,
+        });
+      } finally {
+        setStoredToken(null);
+      }
     },
     onSuccess: () => {
       queryClient.clear();

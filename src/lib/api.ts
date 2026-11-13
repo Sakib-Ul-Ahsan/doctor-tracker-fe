@@ -41,6 +41,30 @@ export function setUnauthorizedHandler(handler: UnauthorizedHandler | null) {
   onUnauthorizedCallback = handler;
 }
 
+const TOKEN_STORAGE_KEY = "doctor_tracker_auth_token";
+
+export function getStoredToken(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredToken(token: string | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (token) {
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    } else {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+    }
+  } catch {
+    // Ignore storage quota/permission exceptions
+  }
+}
+
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
   params?: Record<string, string | number | undefined | null>;
@@ -73,12 +97,14 @@ export async function apiRequest<T>(
   const { body, params, headers, skipUnauthorizedRedirect, ...rest } = options;
 
   const url = buildUrl(path, params);
+  const token = getStoredToken();
 
   const response = await fetch(url, {
     ...rest,
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(headers || {}),
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -90,8 +116,11 @@ export async function apiRequest<T>(
     | null;
 
   if (!response.ok) {
-    if (response.status === 401 && !skipUnauthorizedRedirect && onUnauthorizedCallback) {
-      onUnauthorizedCallback();
+    if (response.status === 401) {
+      setStoredToken(null);
+      if (!skipUnauthorizedRedirect && onUnauthorizedCallback) {
+        onUnauthorizedCallback();
+      }
     }
 
     const errPayload = payload as ApiErrorPayload | null;
