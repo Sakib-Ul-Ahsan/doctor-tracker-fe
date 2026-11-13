@@ -120,7 +120,7 @@ export default function DoctorDetailsPage() {
             <Button
               variant="outline"
               onClick={() => setEditDoctorOpen(true)}
-              className="gap-2"
+              className="gap-2 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200"
             >
               <Pencil className="h-4 w-4" />
               Edit Profile
@@ -128,7 +128,7 @@ export default function DoctorDetailsPage() {
             <Button
               variant="destructive"
               onClick={() => setDeleteDoctorOpen(true)}
-              className="gap-2"
+              className="gap-2 bg-rose-600 hover:bg-rose-700 text-white"
             >
               <Trash2 className="h-4 w-4" />
               Delete Physician
@@ -138,7 +138,7 @@ export default function DoctorDetailsPage() {
       />
 
       {/* Executive Doctor Profile Card */}
-      <Card className="shadow-2xs overflow-hidden border-slate-200/90">
+      <Card className="shadow-2xs overflow-hidden border-slate-200/90 dark:border-slate-800 dark:bg-slate-900">
         <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 px-6 py-6 text-white sm:px-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-4">
@@ -177,49 +177,49 @@ export default function DoctorDetailsPage() {
 
         <CardContent className="p-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/50 p-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                 <Mail className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <span className="block text-[11px] font-medium text-slate-400">Email Address</span>
-                <span className="truncate text-xs font-semibold text-slate-800" title={doctor.email}>
+                <span className="block text-[11px] font-medium text-slate-400 dark:text-slate-500">Email Address</span>
+                <span className="truncate text-xs font-semibold text-slate-800 dark:text-slate-200" title={doctor.email}>
                   {doctor.email}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/50 p-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                 <Phone className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <span className="block text-[11px] font-medium text-slate-400">Phone Number</span>
-                <span className="truncate text-xs font-semibold text-slate-800">
+                <span className="block text-[11px] font-medium text-slate-400 dark:text-slate-500">Phone Number</span>
+                <span className="truncate text-xs font-semibold text-slate-800 dark:text-slate-200">
                   {doctor.phone}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/50 p-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                 <Calendar className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <span className="block text-[11px] font-medium text-slate-400">Onboarding Date</span>
-                <span className="text-xs font-semibold text-slate-800">
+                <span className="block text-[11px] font-medium text-slate-400 dark:text-slate-500">Onboarding Date</span>
+                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                   {formatDate(doctor.createdAt)}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/50 p-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+            <div className="flex items-center gap-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                 <Clock className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <span className="block text-[11px] font-medium text-slate-400">Last Record Update</span>
-                <span className="text-xs font-semibold text-slate-800">
+                <span className="block text-[11px] font-medium text-slate-400 dark:text-slate-500">Last Record Update</span>
+                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                   {formatDateTime(doctor.updatedAt)}
                 </span>
               </div>
@@ -229,16 +229,16 @@ export default function DoctorDetailsPage() {
       </Card>
 
       {/* Associated Assigned Patients Section */}
-      <Card className="overflow-hidden shadow-2xs border-slate-200/90">
-        <CardHeader className="flex flex-col gap-4 border-b border-slate-100 sm:flex-row sm:items-center sm:justify-between bg-slate-50/40">
+      <Card className="overflow-hidden shadow-2xs border-slate-200/90 dark:border-slate-800 dark:bg-slate-900">
+        <CardHeader className="flex flex-col gap-4 border-b border-slate-100 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between bg-slate-50/40 dark:bg-slate-900/40">
           <div>
-            <CardTitle className="flex items-center gap-2 text-base">
+            <CardTitle className="flex items-center gap-2 text-base text-slate-900 dark:text-slate-100">
               Assigned Patients Directory
               <Badge variant="default" className="text-xs">
                 {doctor.patientCount ?? 0} Active
               </Badge>
             </CardTitle>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
               Patients currently undergoing clinical treatment under {doctor.name}.
             </p>
           </div>
@@ -252,12 +252,12 @@ export default function DoctorDetailsPage() {
                   setPage(1);
                 }}
                 placeholder="Search assigned patients..."
-                className="pl-9 bg-white"
+                className="pl-9 bg-white dark:bg-slate-900"
               />
             </div>
             <Button
               onClick={() => setAddPatientOpen(true)}
-              className="gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-600/20"
+              className="gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-600/20 text-white"
             >
               <UserPlus className="h-4 w-4" />
               Assign Patient
@@ -301,70 +301,91 @@ export default function DoctorDetailsPage() {
           </div>
         ) : (
           <>
-            <Table>
+            <Table className="min-w-[880px]">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[260px]">Patient</TableHead>
-                  <TableHead>Demographics</TableHead>
-                  <TableHead>Clinical Condition</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Registered</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="w-[240px] min-w-[220px]">Patient Record</TableHead>
+                  <TableHead className="w-[140px] min-w-[130px]">Demographics</TableHead>
+                  <TableHead className="w-[160px] min-w-[150px]">Medical Condition</TableHead>
+                  <TableHead className="w-[190px] min-w-[180px]">Contact Info</TableHead>
+                  <TableHead className="w-[130px] min-w-[120px]">Intake Date</TableHead>
+                  <TableHead className="w-[96px] min-w-[96px] text-right pr-4">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {patientsQuery.data.patients.map((patient) => (
                   <TableRow key={patient._id} className="group">
-                    <TableCell>
+                    <TableCell className="w-[240px] min-w-[220px]">
                       <Link
                         href={`/patients/${patient._id}`}
                         className="flex items-center gap-3 group-hover:opacity-90"
                       >
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xs font-bold text-blue-700 border border-blue-200/60 group-hover:border-blue-400 transition-colors">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xs font-bold text-blue-700 border border-blue-200/60 group-hover:border-blue-400 transition-colors dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800">
                           {getInitials(patient.name)}
                         </div>
-                        <div className="min-w-0">
-                          <p className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className="font-semibold text-xs text-slate-900 group-hover:text-blue-600 transition-colors dark:text-slate-100 dark:group-hover:text-blue-400 truncate"
+                            title={patient.name}
+                          >
                             {patient.name}
                           </p>
-                          <p className="truncate text-xs text-slate-400">
+                          <p className="truncate text-[11px] text-slate-400 dark:text-slate-500">
                             ID: {patient._id.slice(-6)}
                           </p>
                         </div>
                       </Link>
                     </TableCell>
 
-                    <TableCell>
-                      <span className="text-xs font-medium text-slate-700">
-                        {patient.age} yrs &bull; {patient.gender}
+                    <TableCell className="w-[140px] min-w-[130px]">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300">
+                        <span>{patient.age} yrs</span>
+                        <span className="text-slate-400">&bull;</span>
+                        <span>{patient.gender}</span>
                       </span>
                     </TableCell>
 
-                    <TableCell>
-                      <Badge variant={getConditionBadgeVariant(patient.condition)}>
+                    <TableCell className="w-[160px] min-w-[150px]">
+                      <Badge
+                        variant={getConditionBadgeVariant(patient.condition)}
+                        className="text-xs font-medium max-w-[145px] truncate block text-center"
+                        title={patient.condition}
+                      >
                         {patient.condition}
                       </Badge>
                     </TableCell>
 
-                    <TableCell>
-                      <div className="space-y-0.5 text-xs text-slate-600">
-                        <p>{patient.phone}</p>
-                        <p className="text-slate-400">{patient.email}</p>
+                    <TableCell className="w-[190px] min-w-[180px]">
+                      <div className="space-y-1 text-xs">
+                        <p
+                          className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300"
+                          title={patient.email}
+                        >
+                          <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          <span className="truncate max-w-[160px]">{patient.email}</span>
+                        </p>
+                        <p
+                          className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400"
+                          title={patient.phone}
+                        >
+                          <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                          <span className="truncate max-w-[160px]">{patient.phone}</span>
+                        </p>
                       </div>
                     </TableCell>
 
-                    <TableCell className="text-xs text-slate-500 whitespace-nowrap">
+                    <TableCell className="w-[130px] min-w-[120px] text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
                       {formatDate(patient.createdAt)}
                     </TableCell>
 
-                    <TableCell className="text-right">
+                    <TableCell className="w-[96px] min-w-[96px] text-right pr-4">
                       <div className="flex items-center justify-end gap-1">
                         <Button
                           variant="ghost"
                           size="icon-sm"
                           asChild
                           title="View patient record"
-                          className="text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+                          className="text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40"
                         >
                           <Link href={`/patients/${patient._id}`}>
                             <Eye className="h-4 w-4" />
@@ -375,7 +396,7 @@ export default function DoctorDetailsPage() {
                           size="icon-sm"
                           onClick={() => setRemovingPatient(patient)}
                           title="Remove / Reassign patient"
-                          className="text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+                          className="text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400"
                         >
                           <UserMinus className="h-4 w-4" />
                         </Button>

@@ -7,7 +7,7 @@ interface TableSkeletonProps {
 
 export function TableSkeleton({ rows = 6, columns = 6 }: TableSkeletonProps) {
   return (
-    <div className="divide-y divide-slate-100">
+    <div className="divide-y divide-slate-100 dark:divide-slate-800">
       {Array.from({ length: rows }).map((_, rowIdx) => (
         <div key={rowIdx} className="flex items-center gap-4 px-4 py-4">
           {Array.from({ length: columns }).map((__, colIdx) => (

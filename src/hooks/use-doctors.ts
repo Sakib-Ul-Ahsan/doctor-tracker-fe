@@ -19,8 +19,9 @@ export interface DoctorsQueryParams {
 
 interface DoctorsListPayload {
   doctors: Doctor[];
-  filters: {
-    specializations: string[];
+  specializations?: string[];
+  filters?: {
+    specializations?: string[];
   };
 }
 
@@ -40,9 +41,15 @@ export function useDoctors(params: DoctorsQueryParams = {}) {
           sortOrder: params.sortOrder ?? "desc",
         },
       });
+
+      const specializations =
+        response.data.specializations ??
+        response.data.filters?.specializations ??
+        [];
+
       return {
-        doctors: response.data.doctors,
-        specializations: response.data.filters.specializations,
+        doctors: response.data.doctors ?? [],
+        specializations,
         meta: response.meta as PaginationMeta,
       };
     },
@@ -75,28 +82,25 @@ export function useDoctor(id: string) {
 }
 
 export function useDoctorPatients(
-  doctorId: string,
+  id: string,
   params: { search?: string; page?: number; limit?: number } = {}
 ) {
   return useQuery({
-    queryKey: ["doctor", doctorId, "patients", params],
+    queryKey: ["doctor", id, "patients", params],
     queryFn: async () => {
-      const response = await apiRequest<{ patients: Patient[] }>(
-        `/doctors/${doctorId}/patients`,
-        {
-          params: {
-            search: params.search,
-            page: params.page ?? 1,
-            limit: params.limit ?? 10,
-          },
-        }
-      );
+      const response = await apiRequest<{ patients: Patient[] }>(`/doctors/${id}/patients`, {
+        params: {
+          search: params.search,
+          page: params.page ?? 1,
+          limit: params.limit ?? 10,
+        },
+      });
       return {
         patients: response.data.patients,
         meta: response.meta as PaginationMeta,
       };
     },
-    enabled: Boolean(doctorId),
+    enabled: Boolean(id),
     placeholderData: keepPreviousData,
   });
 }
@@ -115,7 +119,7 @@ export function useCreateDoctor() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["doctors"] });
       void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      toast.success("Doctor added successfully");
+      toast.success("Doctor registered successfully");
     },
     onError: (error: unknown) => {
       toast.error(error instanceof ApiClientError ? error.message : "Failed to create doctor");
@@ -173,3 +177,32 @@ export function useDeleteDoctor() {
   });
 }
 
+export function useBulkDeleteDoctors() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const response = await apiRequest<{ deletedCount: number; deletedIds: string[] }>(
+        "/doctors/bulk-delete",
+        {
+          method: "POST",
+          body: { ids },
+        }
+      );
+      return response.data;
+    },
+    onSuccess: (data) => {
+      void queryClient.invalidateQueries({ queryKey: ["doctors"] });
+      void queryClient.invalidateQueries({ queryKey: ["patients"] });
+      void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      toast.success(`Successfully deleted ${data.deletedCount} physician(s)`);
+    },
+    onError: (error: unknown) => {
+      toast.error(
+        error instanceof ApiClientError
+          ? error.message
+          : "Failed to delete selected physicians."
+      );
+    },
+  });
+}

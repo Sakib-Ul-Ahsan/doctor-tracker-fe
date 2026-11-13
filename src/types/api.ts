@@ -91,6 +91,26 @@ export interface MonthlyStatPoint {
   doctors: number;
 }
 
+export type ActivityType =
+  | "doctor_created"
+  | "doctor_updated"
+  | "doctor_deleted"
+  | "patient_created"
+  | "patient_updated"
+  | "patient_deleted"
+  | "patient_reassigned";
+
+export interface ActivityItem {
+  _id: string;
+  type: ActivityType;
+  description: string;
+  entityId?: string;
+  entityType: "doctor" | "patient";
+  meta?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface DashboardStats {
   summary: DashboardSummary;
   recentDoctors: Doctor[];
@@ -98,5 +118,5 @@ export interface DashboardStats {
   registrationTrends: RegistrationTrendPoint[];
   doctorDistribution: DoctorDistributionPoint[];
   monthlyStats: MonthlyStatPoint[];
+  activities?: ActivityItem[];
 }
-

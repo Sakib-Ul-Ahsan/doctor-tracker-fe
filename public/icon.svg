@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#2563eb"/>
+      <stop offset="100%" stopColor="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect width="32" height="32" rx="8" fill="url(#badgeGrad)"/>
+  
+  <!-- Clinical Cross -->
+  <path d="M13 7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4.5a.5.5 0 0 0 .5.5H24a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4.5a.5.5 0 0 0-.5.5V25a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4.5a.5.5 0 0 0-.5-.5H8a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4.5a.5.5 0 0 0 .5-.5V7z" fill="#ffffff"/>
+  
+  <!-- ECG / Vitality Pulse Wave in Brand Blue -->
+  <path d="M9 16h3.2l1.6-3 2 6 1.8-4 1.2 2H23" fill="none" stroke="#2563eb" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+

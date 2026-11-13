@@ -20,8 +20,9 @@ export interface PatientsQueryParams {
 
 interface PatientsListPayload {
   patients: Patient[];
-  filters: {
-    conditions: string[];
+  conditions?: string[];
+  filters?: {
+    conditions?: string[];
   };
 }
 
@@ -42,9 +43,15 @@ export function usePatients(params: PatientsQueryParams = {}) {
           sortOrder: params.sortOrder ?? "desc",
         },
       });
+
+      const conditions =
+        response.data.conditions ??
+        response.data.filters?.conditions ??
+        [];
+
       return {
-        patients: response.data.patients,
-        conditions: response.data.filters.conditions,
+        patients: response.data.patients ?? [],
+        conditions,
         meta: response.meta as PaginationMeta,
       };
     },
@@ -135,6 +142,36 @@ export function useDeletePatient() {
     },
     onError: (error: unknown) => {
       toast.error(error instanceof ApiClientError ? error.message : "Failed to delete patient");
+    },
+  });
+}
+
+export function useBulkDeletePatients() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const response = await apiRequest<{ deletedCount: number; deletedIds: string[] }>(
+        "/patients/bulk-delete",
+        {
+          method: "POST",
+          body: { ids },
+        }
+      );
+      return response.data;
+    },
+    onSuccess: (data) => {
+      void queryClient.invalidateQueries({ queryKey: ["patients"] });
+      void queryClient.invalidateQueries({ queryKey: ["doctors"] });
+      void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      toast.success(`Successfully deleted ${data.deletedCount} patient(s)`);
+    },
+    onError: (error: unknown) => {
+      toast.error(
+        error instanceof ApiClientError
+          ? error.message
+          : "Failed to delete selected patients."
+      );
     },
   });
 }

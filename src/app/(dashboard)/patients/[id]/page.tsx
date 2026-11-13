@@ -96,14 +96,18 @@ export default function PatientDetailsPage() {
         description={`Clinical Record • MRN-${patient._id.slice(-6).toUpperCase()} • ${patient.age} years old • ${patient.gender}`}
         actions={
           <div className="flex items-center gap-2.5">
-            <Button variant="outline" onClick={() => setEditOpen(true)} className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setEditOpen(true)}
+              className="gap-2 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200"
+            >
               <Pencil className="h-4 w-4" />
               Edit Record
             </Button>
             <Button
               variant="destructive"
               onClick={() => setDeleteOpen(true)}
-              className="gap-2"
+              className="gap-2 bg-rose-600 hover:bg-rose-700 text-white"
             >
               <Trash2 className="h-4 w-4" />
               Delete Record
@@ -116,7 +120,7 @@ export default function PatientDetailsPage() {
         {/* Main Details Section (2 cols) */}
         <div className="space-y-6 lg:col-span-2">
           {/* Header Banner */}
-          <Card className="shadow-2xs overflow-hidden border-slate-200/90">
+          <Card className="shadow-2xs overflow-hidden border-slate-200/90 dark:border-slate-800 dark:bg-slate-900">
             <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 px-6 py-6 text-white sm:px-8">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4">
@@ -151,53 +155,53 @@ export default function PatientDetailsPage() {
             </div>
 
             <CardContent className="p-6">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">
                 Personal &amp; Contact Information
               </h3>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <div className="flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                     <User className="h-5 w-5" />
                   </div>
                   <div>
-                    <span className="block text-[11px] font-medium text-slate-400">Age &amp; Gender</span>
-                    <span className="text-xs font-bold text-slate-800">
+                    <span className="block text-[11px] font-medium text-slate-400 dark:text-slate-500">Age &amp; Gender</span>
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                       {patient.age} years old ({patient.gender})
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <div className="flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                     <Phone className="h-5 w-5" />
                   </div>
                   <div>
-                    <span className="block text-[11px] font-medium text-slate-400">Phone Number</span>
-                    <span className="text-xs font-bold text-slate-800">
+                    <span className="block text-[11px] font-medium text-slate-400 dark:text-slate-500">Phone Number</span>
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                       {patient.phone}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <div className="flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                     <Mail className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
-                    <span className="block text-[11px] font-medium text-slate-400">Email Address</span>
-                    <span className="truncate text-xs font-bold text-slate-800 block" title={patient.email}>
+                    <span className="block text-[11px] font-medium text-slate-400 dark:text-slate-500">Email Address</span>
+                    <span className="truncate text-xs font-bold text-slate-800 dark:text-slate-200 block" title={patient.email}>
                       {patient.email}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                <div className="flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                     <Calendar className="h-5 w-5" />
                   </div>
                   <div>
-                    <span className="block text-[11px] font-medium text-slate-400">Intake Registration</span>
-                    <span className="text-xs font-bold text-slate-800">
+                    <span className="block text-[11px] font-medium text-slate-400 dark:text-slate-500">Intake Registration</span>
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                       {formatDate(patient.createdAt)}
                     </span>
                   </div>
@@ -207,36 +211,36 @@ export default function PatientDetailsPage() {
           </Card>
 
           {/* Clinical Status & Care Timeline Card */}
-          <Card className="shadow-2xs border-slate-200/90">
-            <CardHeader className="pb-3 border-b border-slate-100">
-              <CardTitle className="text-base flex items-center gap-2">
-                <HeartPulse className="h-4 w-4 text-blue-600" />
+          <Card className="shadow-2xs border-slate-200/90 dark:border-slate-800 dark:bg-slate-900">
+            <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800">
+              <CardTitle className="text-base flex items-center gap-2 text-slate-900 dark:text-slate-100">
+                <HeartPulse className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 Clinical Case Status &amp; Protocol
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-4 space-y-4">
-              <div className="flex flex-col gap-3 rounded-xl bg-slate-50 p-4 border border-slate-100 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 p-4 border border-slate-100 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <span className="text-xs font-bold text-slate-800">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                     Active Condition: {patient.condition}
                   </span>
-                  <p className="mt-0.5 text-xs text-slate-500">
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                     Strict doctor-patient assignment enforced. Physician is actively monitoring treatment.
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5 self-start rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200/60">
+                <div className="flex items-center gap-1.5 self-start rounded-full bg-emerald-50 dark:bg-emerald-950/50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Active Monitoring
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+              <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <span className="flex items-center gap-1.5">
                   <Clock className="h-3.5 w-3.5 text-slate-400" />
                   Last Updated: {formatDateTime(patient.updatedAt)}
                 </span>
-                <span className="flex items-center gap-1.5 font-medium text-slate-700">
-                  <ShieldCheck className="h-3.5 w-3.5 text-blue-600" />
+                <span className="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
+                  <ShieldCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                   Verified Patient Record
                 </span>
               </div>
@@ -246,10 +250,10 @@ export default function PatientDetailsPage() {
 
         {/* Right Sidebar: Attending Physician Card */}
         <div className="space-y-6">
-          <Card className="shadow-2xs border-slate-200/90">
-            <CardHeader className="pb-3 border-b border-slate-100">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Stethoscope className="h-4 w-4 text-blue-600" />
+          <Card className="shadow-2xs border-slate-200/90 dark:border-slate-800 dark:bg-slate-900">
+            <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800">
+              <CardTitle className="text-base flex items-center gap-2 text-slate-900 dark:text-slate-100">
+                <Stethoscope className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 Attending Physician
               </CardTitle>
             </CardHeader>
@@ -257,11 +261,11 @@ export default function PatientDetailsPage() {
               {doctorObj ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-sm font-bold text-white shadow-xs">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-900 dark:bg-slate-800 text-sm font-bold text-white shadow-xs">
                       {getInitials(doctorObj.name)}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-bold text-slate-900 truncate">
+                      <p className="font-bold text-slate-900 dark:text-slate-100 truncate">
                         {doctorObj.name}
                       </p>
                       <Badge variant="default" className="mt-1">
@@ -270,22 +274,22 @@ export default function PatientDetailsPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-2.5 rounded-xl bg-slate-50 p-3.5 border border-slate-100 text-xs">
-                    <div className="flex items-center gap-2 text-slate-700">
+                  <div className="space-y-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3.5 border border-slate-100 dark:border-slate-800 text-xs">
+                    <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                       <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
                       <span className="truncate">{doctorObj.hospital}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-slate-700">
+                    <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                       <Mail className="h-4 w-4 text-slate-400 shrink-0" />
                       <span className="truncate">{doctorObj.email}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-slate-700">
+                    <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                       <Phone className="h-4 w-4 text-slate-400 shrink-0" />
                       <span>{doctorObj.phone}</span>
                     </div>
                   </div>
 
-                  <Button asChild className="w-full gap-2 bg-blue-600 hover:bg-blue-700">
+                  <Button asChild className="w-full gap-2 bg-blue-600 hover:bg-blue-700 text-white">
                     <Link href={`/doctors/${doctorObj._id}`}>
                       View Physician Profile
                       <ArrowRight className="h-4 w-4" />
@@ -293,14 +297,14 @@ export default function PatientDetailsPage() {
                   </Button>
                 </div>
               ) : (
-                <div className="py-6 text-center text-xs text-slate-400">
-                  <Stethoscope className="mx-auto mb-2 h-8 w-8 text-slate-300" />
+                <div className="py-6 text-center text-xs text-slate-400 dark:text-slate-500">
+                  <Stethoscope className="mx-auto mb-2 h-8 w-8 text-slate-300 dark:text-slate-600" />
                   <p>No physician currently assigned.</p>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setEditOpen(true)}
-                    className="mt-3"
+                    className="mt-3 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200"
                   >
                     Assign a Doctor
                   </Button>
