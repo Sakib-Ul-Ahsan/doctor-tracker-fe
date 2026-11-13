@@ -1,7 +1,14 @@
 import { ApiErrorPayload, ApiResponse } from "@/types/api";
 
+const RAW_API_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "");
+
+// In production, default to same-origin relative proxy "/api" to eliminate CORS completely.
+// In local development, falls back to "http://localhost:5000/api" if not specified.
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "") || "http://localhost:5000/api";
+  RAW_API_URL ||
+  (typeof window !== "undefined" && window.location.hostname !== "localhost"
+    ? "/api"
+    : "http://localhost:5000/api");
 
 export class ApiClientError extends Error {
   public readonly status: number;
@@ -42,7 +49,11 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
 
 function buildUrl(path: string, params?: Record<string, string | number | undefined | null>): string {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const url = new URL(`${API_BASE_URL}${normalizedPath}`);
+  const base =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : "http://localhost:3000";
+  const url = new URL(`${API_BASE_URL}${normalizedPath}`, base);
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {

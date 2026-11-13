@@ -12,6 +12,21 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async rewrites() {
+    const backendTarget =
+      process.env.BACKEND_API_URL || "https://doctor-tracker-be.vercel.app";
+
+    return [
+      {
+        source: "/api/v1/:path*",
+        destination: `${backendTarget}/api/v1/:path*`,
+      },
+      {
+        source: "/api/:path*",
+        destination: `${backendTarget}/api/v1/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
